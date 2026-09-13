@@ -27,9 +27,9 @@ public class ScriptService {
   public ScriptsResponse queryScripts(String name, List<String> tags,
       String difficulty, Boolean published) {
     List<ScriptRow> rows = scriptMapper.selectScripts(
-      name == null ? null : name.trim(),
+      normalizeName(name),
       normalizeTags(tags),
-      difficulty,
+      normalizeDifficulty(difficulty),
       published);
 
     Map<Long, List<String>> tagsByScript = scriptMapper.selectAllTags().stream()
@@ -56,6 +56,22 @@ public class ScriptService {
       items.size(),
       scriptMapper.selectDistinctTags(),
       orderedDifficulties(scriptMapper.selectDistinctDifficulties()));
+  }
+
+  private String normalizeName(String name) {
+    if (name == null) {
+      return null;
+    }
+    String trimmed = name.trim();
+    return trimmed.isEmpty() ? null : trimmed;
+  }
+
+  private String normalizeDifficulty(String difficulty) {
+    if (difficulty == null) {
+      return null;
+    }
+    String trimmed = difficulty.trim();
+    return trimmed.isEmpty() ? null : trimmed;
   }
 
   private List<String> normalizeTags(List<String> tags) {

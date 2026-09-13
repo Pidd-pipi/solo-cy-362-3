@@ -30,3 +30,30 @@ export interface OverviewResponse {
   kpis: KpiItem[];
   records: OperationRecord[];
 }
+
+export interface ScriptItem {
+  id: number;
+  name: string;
+  tags: string[];
+  difficulty: string;
+  durationMinutes: number;
+  minPlayers: number;
+  maxPlayers: number;
+  dmId: number | null;
+  dmName: string | null;
+  published: boolean;
+}
+
+export interface ScriptsResponse {
+  items: ScriptItem[];
+  total: number;
+  allTags: string[];
+  difficulties: string[];
+}
+
+export interface ScriptFilters {
+  name: string;
+  tags: string[];
+  difficulty: string;
+  published: boolean | null;
+}

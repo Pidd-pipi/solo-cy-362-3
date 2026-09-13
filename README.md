@@ -16,6 +16,7 @@ docker compose up -d
 - 前端：http://localhost:28502
 - 后端健康检查：http://localhost:29502/health
 - API 示例：http://localhost:28502/api/overview
+- 剧本库接口：`GET /api/scripts`，支持组合查询参数 `name`（名称模糊）、`tag`（可重复，多个标签为 AND）、`difficulty`、`published=true|false`
 
 ## 项目主要功能
 

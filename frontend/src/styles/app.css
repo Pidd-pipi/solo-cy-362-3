@@ -119,6 +119,73 @@ body {
   margin-top: 26px;
 }
 
+.workspace > .script-library.work-panel {
+  margin-top: 0;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.panel-heading h2 {
+  margin: 0 0 6px;
+}
+
+.panel-subtitle {
+  margin: 0;
+  color: color-mix(in srgb, #19212e 62%, #3268b8 38%);
+  font-size: 14px;
+}
+
+.error-alert {
+  margin-bottom: 16px;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, #19212e 12%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, #3268b8 6%, white 94%);
+}
+
+.filter-name {
+  width: 220px;
+}
+
+.filter-tags {
+  min-width: 260px;
+  flex: 1 1 260px;
+}
+
+.filter-difficulty {
+  width: 150px;
+}
+
+.filter-published {
+  flex-shrink: 0;
+}
+
+.script-name {
+  font-weight: 700;
+}
+
+.tag-chip {
+  margin: 0 6px 6px 0;
+}
+
+.muted {
+  color: color-mix(in srgb, #19212e 45%, transparent);
+}
+
 .plain-table {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, #19212e 12%, transparent);

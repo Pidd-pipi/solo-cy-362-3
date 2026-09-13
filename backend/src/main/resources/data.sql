@@ -1,39 +1,6 @@
--- PostgreSQL 初始化脚本（容器首次启动时自动执行）
+-- 剧本库种子数据
 
-CREATE TABLE IF NOT EXISTS dms (
-  id BIGSERIAL PRIMARY KEY,
-  name VARCHAR(80) NOT NULL,
-  title VARCHAR(80),
-  active BOOLEAN NOT NULL DEFAULT TRUE
-);
-
-CREATE TABLE IF NOT EXISTS scripts (
-  id BIGSERIAL PRIMARY KEY,
-  name VARCHAR(160) NOT NULL,
-  difficulty VARCHAR(40) NOT NULL,
-  duration_minutes INTEGER NOT NULL,
-  min_players INTEGER NOT NULL,
-  max_players INTEGER NOT NULL,
-  dm_id BIGINT REFERENCES dms (id),
-  published BOOLEAN NOT NULL DEFAULT TRUE
-);
-
-CREATE TABLE IF NOT EXISTS script_tags (
-  id BIGSERIAL PRIMARY KEY,
-  script_id BIGINT NOT NULL REFERENCES scripts (id),
-  tag VARCHAR(40) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS operation_records (
-  id BIGSERIAL PRIMARY KEY,
-  module_name VARCHAR(120) NOT NULL,
-  owner_name VARCHAR(80) NOT NULL,
-  status VARCHAR(40) NOT NULL,
-  metric VARCHAR(40) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-INSERT INTO dms (id, name, title, active) VALUES
+MERGE INTO dms (id, name, title, active) KEY (id) VALUES
   (1, '林墨', '首席推理DM', TRUE),
   (2, '苏晴', '情感本主持', TRUE),
   (3, '老周', '机制本主持', TRUE),
@@ -42,9 +9,7 @@ INSERT INTO dms (id, name, title, active) VALUES
   (6, '小鹿', '新手本主持', TRUE),
   (7, '白川', '实习DM（待认证）', FALSE);
 
-SELECT setval(pg_get_serial_sequence('dms', 'id'), (SELECT MAX(id) FROM dms));
-
-INSERT INTO scripts (id, name, difficulty, duration_minutes, min_players, max_players, dm_id, published) VALUES
+MERGE INTO scripts (id, name, difficulty, duration_minutes, min_players, max_players, dm_id, published) KEY (id) VALUES
   (1,  '雾都迷案',       '硬核烧脑', 300, 6, 8, 1, TRUE),
   (2,  '月下告白',       '新手友好', 180, 4, 6, 2, TRUE),
   (3,  '长安十二时辰',   '进阶挑战', 240, 7, 8, 3, TRUE),
@@ -59,9 +24,7 @@ INSERT INTO scripts (id, name, difficulty, duration_minutes, min_players, max_pl
   (12, '海岛奇遇记',     '新手友好', 180, 5, 6, 6, TRUE),
   (13, '金陵旧梦',       '进阶挑战', 270, 6, 7, 2, FALSE);
 
-SELECT setval(pg_get_serial_sequence('scripts', 'id'), (SELECT MAX(id) FROM scripts));
-
-INSERT INTO script_tags (id, script_id, tag) VALUES
+MERGE INTO script_tags (id, script_id, tag) KEY (id) VALUES
   (1,  1,  '推理'), (2,  1,  '本格'), (3,  1,  '民国'),
   (4,  2,  '情感'), (5,  2,  '现代'), (6,  2,  '欢乐'),
   (7,  3,  '古风'), (8,  3,  '阵营'), (9,  3,  '机制'),
@@ -76,7 +39,5 @@ INSERT INTO script_tags (id, script_id, tag) VALUES
   (30, 12, '欢乐'), (31, 12, '机制'), (32, 12, '现代'),
   (33, 13, '情感'), (34, 13, '民国'), (35, 13, '古风');
 
-SELECT setval(pg_get_serial_sequence('script_tags', 'id'), (SELECT MAX(id) FROM script_tags));
-
-INSERT INTO operation_records (module_name, owner_name, status, metric)
-VALUES ('剧本库与DM管理', '运营组', 'ready', '100%');
+MERGE INTO operation_records (id, module_name, owner_name, status, metric) KEY (id) VALUES
+  (1, '剧本库与DM管理', '运营组', 'ready', '100%');

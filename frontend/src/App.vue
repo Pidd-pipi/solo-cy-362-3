@@ -1,29 +1,27 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { fetchOverview } from "./api/client";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { APP_CODE, APP_NAME } from "./constants/app";
 import { REQUEST_MESSAGES } from "./constants/messages";
-import { createFallbackOverview } from "./state/dashboard";
-import type { OverviewResponse } from "./types";
-import FeatureStrip from "./components/FeatureStrip.vue";
-import MetricGrid from "./components/MetricGrid.vue";
-import OperationsTable from "./components/OperationsTable.vue";
+import { routeFromHash, routes } from "./routes";
+import OverviewView from "./views/OverviewView.vue";
+import ScriptLibraryView from "./views/ScriptLibraryView.vue";
 
-const overview = ref<OverviewResponse>(createFallbackOverview());
-const notice = ref(REQUEST_MESSAGES.overviewFallback);
+const activePath = ref(routeFromHash(window.location.hash));
+
+function syncPath() {
+  activePath.value = routeFromHash(window.location.hash);
+}
+
+function go(path: string) {
+  window.location.hash = path === "/" ? "#/" : `#${path}`;
+}
 
 function goHealth() {
   window.location.href = REQUEST_MESSAGES.healthPath;
 }
 
-onMounted(async () => {
-  try {
-    overview.value = await fetchOverview();
-    notice.value = "后端服务已联通，当前展示实时接口数据。";
-  } catch {
-    notice.value = REQUEST_MESSAGES.overviewFallback;
-  }
-});
+onMounted(() => window.addEventListener("hashchange", syncPath));
+onBeforeUnmount(() => window.removeEventListener("hashchange", syncPath));
 </script>
 
 <template>
@@ -33,22 +31,55 @@ onMounted(async () => {
         <span class="brand-code">{{ APP_CODE }}</span>
         <h1 class="brand-title">{{ APP_NAME }}</h1>
       </div>
-      <el-button type="primary" @click="goHealth">API Health</el-button>
+      <nav class="topnav">
+        <button
+          v-for="route in routes"
+          :key="route.path"
+          type="button"
+          class="nav-item"
+          :class="{ 'is-active': activePath === route.path }"
+          @click="go(route.path)"
+        >
+          {{ route.label }}
+        </button>
+        <el-button type="primary" @click="goHealth">API Health</el-button>
+      </nav>
     </header>
-    <section class="workspace">
-      <div class="lead-grid">
-        <article class="hero-panel">
-          <span class="pill">{{ notice }}</span>
-          <h2>{{ overview.appName }}</h2>
-          <p>{{ overview.description }}</p>
-        </article>
-        <MetricGrid :items="overview.kpis" />
-      </div>
-      <FeatureStrip :items="overview.features" />
-      <section class="work-panel">
-        <h2>运营任务流</h2>
-        <OperationsTable :records="overview.records" />
-      </section>
+    <OverviewView v-if="activePath === '/'" />
+    <section v-else class="workspace">
+      <ScriptLibraryView />
     </section>
   </main>
 </template>
+
+<style scoped>
+.topnav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nav-item {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, #19212e 18%, transparent);
+  background: transparent;
+  color: #19212e;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  border-color: #3268b8;
+  color: #3268b8;
+}
+
+.nav-item.is-active {
+  background: #3268b8;
+  border-color: #3268b8;
+  color: #fff;
+}
+</style>
